@@ -2,16 +2,17 @@ import CardLayout from '@components/CardLayout'
 import React, { ChangeEvent, useState } from 'react'
 import { InputLabel, MenuItem, Select, FormControl, TextField, SelectChangeEvent, Button } from '@mui/material';
 import { AiFillCaretRight } from 'react-icons/ai';
+import toast from 'react-hot-toast';
+import { inputType } from 'src/constants/types';
+import axios from 'axios';
+import { LoadingButton } from '@mui/lab';
 
 const JoinAsRider = () => {
 
   const [vType, setVType] = useState<any>('');
-  const [dlFile, setFDlFile] = useState<any>('');
-  const [nidFile, setNidFile] = useState<any>('');
-  const [ppFile, setPPFile] = useState<any>('');
-
-  const [input, setInput] = useState({
-    name: '', age: '', address: '', phone: '', dlImg: '', nid: '', img: '', carName: '', carModel: '', namePlate: '', password: '', confirmPassword: '', vehicleType: ''
+  const [loading, setLoading] = useState<boolean>(false);
+  const [input, setInput] = useState<inputType>({
+    name: '', email: '', age: '', address: '', phone: '', dlImg: '', nid: '', img: '', carName: '', carModel: '', namePlate: '', password: '', confirmPassword: '', vehicleType: ''
   })
 
   // select function
@@ -21,174 +22,257 @@ const JoinAsRider = () => {
   }
 
   const handleDLFileChange = (e: any) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      setFDlFile(files[0]);
+    let target = e.target as HTMLInputElement;
+    if (!target.files) return;
+
+    if (!e.target.files[0].name.match(/\.(jpg|jpeg|png|JPG|PNG)$/)) {
+      setInput({ ...input, dlImg: '' })
+      toast.error('Only jpg, jpeg & png file supported!')
+    } else {
+      setInput({ ...input, dlImg: e.target.files[0] })
     }
   };
 
   const handleNidFileChange = (e: any) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      setNidFile(files[0]);
+    let target = e.target as HTMLInputElement;
+    if (!target.files) return;
+
+    if (!e.target.files[0].name.match(/\.(jpg|jpeg|png|JPG|PNG)$/)) {
+      setInput({ ...input, nid: '' })
+      toast.error('Only jpg, jpeg & png file supported!')
+    } else {
+      setInput({ ...input, nid: e.target.files[0] })
     }
   };
 
   const handlePPFileChange = (e: any) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      setPPFile(files[0]);
+    let target = e.target as HTMLInputElement;
+    if (!target.files) return;
+
+    if (!e.target.files[0].name.match(/\.(jpg|jpeg|png|JPG|PNG)$/)) {
+      setInput({ ...input, img: '' })
+      toast.error('Only jpg, jpeg & png file supported!')
+    } else {
+      setInput({ ...input, img: e.target.files[0] })
     }
   };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
+    if (input.name === '' || input.email === '' || input.age === '' || input.address === '' || input.phone === '' || input.carName === '' || input.carModel === '' || input.namePlate === '' || input.password === '' || input.confirmPassword === '' || input.vehicleType === '' || !input.img.name || !input.dlImg.name || !input.nid.name) {
+      toast.error('All fields are required!');
+      return;
+    }
+
+    if (input.password.length < 6) {
+      toast.error('Password length must be greater than five!');
+      return;
+    }
+
+    if (input.password !== input.confirmPassword) {
+      toast.error('Password must be matched!');
+      return;
+    }
+
+    setLoading(true);
+
+    const formData = new FormData()
+    formData.append('name', input.name);
+    formData.append('email', input.email);
+    formData.append('age', input.age);
+    formData.append('address', input.address);
+    formData.append('phone', input.phone);
+    formData.append('carName', input.carName);
+    formData.append('carModel', input.carModel);
+    formData.append('namePlate', input.namePlate);
+    formData.append('img', input.img);
+    formData.append('dlImg', input.dlImg);
+    formData.append('nid', input.nid);
+    formData.append('password', input.password);
+    formData.append('confirmPassword', input.confirmPassword);
+    formData.append('vehicleType', input.vehicleType);
+    formData.append('role', 'rider');
+
+    const config = {headers: {}};
+
+    axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}user/signup`, formData, config)
+      .then(res => {
+        setLoading(false);
+        if(res.data.success){
+          toast.success(res.data.message);
+        }else{
+          toast.error('Server error!');
+        }
+      })
+  }
 
   return (
     <CardLayout>
 
-      <div className="grid lg:grid-cols-3 grid-cols-1 gap-x-5 gap-y-8 lg:w-[80%] w-[90%]">
+      <form encType='multipart/form-data' onSubmit={handleSubmit} className='lg:w-[80%] w-[90%]'>
 
-        <TextField
-          required
-          label="Full Name"
-          variant="outlined"
-          className=' !text-indigo-500 !w-full'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, name: e.target.value })}
-        />
+        <div className="grid lg:grid-cols-3 grid-cols-1 gap-x-5 gap-y-8 ">
 
-        <TextField
-          required
-          label="Age"
-          type='number'
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, age: e.target.value })}
-        />
+          <TextField
+            required
+            label="Full Name"
+            variant="outlined"
+            className=' !text-indigo-500 !w-full'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, name: e.target.value })}
+          />
 
-        <TextField
-          required
-          label="Address"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, address: e.target.value })}
-        />
+          <TextField
+            required
+            type='email'
+            label="Email"
+            variant="outlined"
+            className=' !text-indigo-500 !w-full'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, email: e.target.value })}
+          />
 
-        <TextField
-          required
-          label="Phone"
-          type='number'
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, phone: e.target.value })}
-        />
-
-        <TextField
-          required
-          label="Car Name"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carName: e.target.value })}
-        />
-
-        <TextField
-          required
-          label="Car Model"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carModel: e.target.value })}
-        />
-
-        <TextField
-          required
-          label="Car Name Plate"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, namePlate: e.target.value })}
-        />
-
-        <TextField
-          required
-          label="Password"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, password: e.target.value })}
-        />
-
-        <TextField
-          required
-          label="Confirm Password"
-          variant="outlined"
-          className=' !text-indigo-500'
-          onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, confirmPassword: e.target.value })}
-        />
-
-        <FormControl>
-          <InputLabel id="vType" className=' !text-indigo-500'>Vehicle Type</InputLabel>
-          <Select
-            labelId="vType"
-            id="vType"
-            value={vType}
-            label="Vehicle Type"
-            onChange={handleTypeChange}
+          <TextField
+            required
+            label="Age"
+            type='number'
+            variant="outlined"
             className=' !text-indigo-500'
-          >
-            <MenuItem value='car'>Car</MenuItem>
-            <MenuItem value='bike'>Bike</MenuItem>
-          </Select>
-        </FormControl>
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, age: e.target.value })}
+          />
 
-      </div>
+          <TextField
+            required
+            label="Address"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, address: e.target.value })}
+          />
 
-      <div className='mt-10 lg:w-[80%] w-[90%]'>
+          <TextField
+            required
+            label="Phone"
+            type='number'
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, phone: e.target.value })}
+          />
 
-        <div className='grid lg:grid-cols-3 grid-cols-1 gap-x-5 w-ful'>
-          <Button
-            variant="contained"
-            component="label"
-            className='!bg-indigo-500 w-full overflow-hidden'
-            size="large"
-            onChange={handleDLFileChange}
-          >
-            {dlFile ? dlFile.name : 'Upload Driving Licence'}
-            <input hidden accept="image/*" multiple type="file" />
-          </Button>
+          <TextField
+            required
+            label="Car Name"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carName: e.target.value })}
+          />
 
-          <Button
-            variant="contained"
-            component="label"
-            className='!bg-indigo-500 w-full overflow-hidden'
-            size="large"
-            onChange={handleNidFileChange}
-          >
-            {nidFile ? nidFile.name : 'Upload NID'}
-            <input hidden accept="image/*" multiple type="file" />
-          </Button>
+          <TextField
+            required
+            label="Car Model"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carModel: e.target.value })}
+          />
 
-          <Button
-            variant="contained"
-            component="label"
-            className='!bg-indigo-500 w-full overflow-hidden'
-            size="large"
-            onChange={handlePPFileChange}
-          >
-            {ppFile ? ppFile.name : 'Upload Profile Picture'}
-            <input hidden accept="image/*" multiple type="file" />
-          </Button>
+          <TextField
+            required
+            label="Car Name Plate"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, namePlate: e.target.value })}
+          />
+
+          <TextField
+            required
+            type='password'
+            label="Password"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, password: e.target.value })}
+          />
+
+          <TextField
+            required
+            type='password'
+            label="Confirm Password"
+            variant="outlined"
+            className=' !text-indigo-500'
+            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, confirmPassword: e.target.value })}
+          />
+
+          <FormControl>
+            <InputLabel id="vType" className=' !text-indigo-500'>Vehicle Type</InputLabel>
+            <Select
+              labelId="vType"
+              id="vType"
+              value={vType}
+              label="Vehicle Type"
+              onChange={handleTypeChange}
+              className=' !text-indigo-500'
+            >
+              <MenuItem value='car'>Car</MenuItem>
+              <MenuItem value='bike'>Bike</MenuItem>
+            </Select>
+          </FormControl>
+
         </div>
 
-      </div>
+        <div className='mt-10'>
 
-      <div className='absolute bottom-3 right-3'>
-        <Button
-          variant="contained"
-          size="large"
-          endIcon={<AiFillCaretRight />}
-          className='!bg-indigo-500'
-          // onClick={() => router.push('/join')}
-        >
-          Submit
-        </Button>
-      </div>
+          <div className='grid lg:grid-cols-3 grid-cols-1 gap-x-5 w-ful'>
+            <Button
+              variant="contained"
+              component="label"
+              className='!bg-indigo-500 w-full overflow-hidden'
+              size="large"
+             
+              onChange={handleDLFileChange}
+            >
+              {input.dlImg ? input.dlImg.name : 'Upload Driving Licence'}
+              <input hidden accept="image/*" id="dlImg" name="dlImg" type="file" />
+            </Button>
 
+            <Button
+              variant="contained"
+              component="label"
+              className='!bg-indigo-500 w-full overflow-hidden'
+              size="large"
+              onChange={handleNidFileChange}
+            >
+              {input.nid ? input.nid.name : 'Upload NID'}
+              <input hidden accept="image/*" type="file" id="nid" name="nid" />
+            </Button>
 
+            <Button
+              variant="contained"
+              component="label"
+              className='!bg-indigo-500 w-full overflow-hidden'
+              size="large"
+              onChange={handlePPFileChange}
+            >
+              {input.img ? input.img.name : 'Upload Profile Picture'}
+              <input hidden accept="image/*" type="file" name="img" />
+            </Button>
+          </div>
+
+        </div>
+
+        <div className='absolute bottom-3 right-3'>
+          <LoadingButton
+            type='submit'
+            variant="contained"
+            size="large"
+            endIcon={<AiFillCaretRight />}
+            className='!bg-indigo-500'
+            // onClick={handleSubmit}
+            loading={loading}
+            disabled={loading}
+          >
+            <span>Submit</span>
+          </LoadingButton>
+
+        </div>
+
+      </form>
     </CardLayout>
   )
 }

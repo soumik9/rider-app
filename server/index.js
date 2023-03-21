@@ -18,7 +18,7 @@ const connection = require("./db");
 
 
 // all routes
-readdirSync("./routes").map((r) => app.use("/", require(`./routes/${r}`)));
+readdirSync("./routes").map((r) => app.use("/api/", require(`./routes/${r}`)));
 // image preview
 app.use('/public', express.static('public'))
 
