@@ -1,13 +1,12 @@
+import IsLogged from '@components/IsLogged'
 import Login from '@views/Login/Login'
 import React from 'react'
 
-type Props = {}
-
-const LoginPage = (props: Props) => {
+const LoginPage = () => {
   return (
-    <>
+    <IsLogged>
         <Login />
-    </>
+    </IsLogged>
   )
 }
 

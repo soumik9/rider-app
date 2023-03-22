@@ -1,14 +1,51 @@
 import CardLayout from '@components/CardLayout'
 import { LoadingButton } from '@mui/lab'
 import { TextField } from '@mui/material'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 import React, { ChangeEvent, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { AiFillCaretRight } from 'react-icons/ai'
+import { asRider } from 'src/constants'
 
 const Login = () => {
 
-    const [input, setInput] = useState({
-        email: '', password: ''
-    })
+    // global
+    const router = useRouter();
+
+    // states
+    const [loading, setLoading] = useState(false);
+    const [input, setInput] = useState({ email: '', password: '' })
+
+    const handleLogin = () => {
+        if (input.email === '' || input.password === '') {
+            toast.error('Missing Information!');
+            return;
+        } 
+
+        setLoading(true);
+        const config = { headers: {} };
+
+        axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}login`, input, config)
+          .then(res => {
+            setLoading(false);
+            console.log(res.data)
+            if (res.data.success) {
+              localStorage.setItem('accessToken', res.data.data.token);
+              localStorage.setItem('userId', res.data.data.user.userId);
+    
+              if(res.data.data.user.role === 'rider'){
+                router.push('/profile')
+              }else{
+                router.push('/packages')
+              }
+    
+              toast.success(res.data.message);
+            } else {
+              toast.error(res.data.message);
+            }
+          })
+    }
 
     return (
         <CardLayout>
@@ -42,9 +79,9 @@ const Login = () => {
                         size="large"
                         endIcon={<AiFillCaretRight />}
                         className='!bg-indigo-500 !w-full'
-                    // onClick={handleSubmit}
-                    // loading={loading}
-                    // disabled={loading}
+                    onClick={handleLogin}
+                    loading={loading}
+                    disabled={loading}
                     >
                         <span>Login</span>
                     </LoadingButton>

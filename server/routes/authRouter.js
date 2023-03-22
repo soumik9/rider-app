@@ -6,7 +6,7 @@ const verifyLogin = require("../middleware/verifyLogin");
 const upload = require("../middleware/upload");
 
 //routes
-router.get('/user/me', verifyLogin, AuthController.profile);
+router.get('/profile', verifyLogin, AuthController.profile);
 
 router.post('/user/signup', upload.fields([
     { name: 'img', maxCount: 1 },
@@ -14,7 +14,7 @@ router.post('/user/signup', upload.fields([
     { name: 'nid', maxCount: 1 },
 ]), AuthController.signup);
 
-router.post('/user/login', AuthController.login);
+router.post('/login', AuthController.login);
 
 
 

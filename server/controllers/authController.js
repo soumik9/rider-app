@@ -40,9 +40,6 @@ const signup = async (req, res) => {
     // token
     const token = generateToken(result);
 
-    console.log(token)
-    console.log(result)
-
     res.send({
       data: {
         token: token,
@@ -64,18 +61,19 @@ const login = async (req, res) => {
 
     // checking is user registred
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).send({ message: 'User not found!', success: false });
+    if (!user) return res.send({ message: 'User not found!', success: false });
 
     // comparing password
-    const isPasswordValid = user.comparePassword(password, user.password);
-    if (!isPasswordValid) return res.status(403).send({ message: 'Password not matched!', success: false });
+    const isPasswordValid = bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return res.send({ message: 'Password not matched!', success: false });
 
     // token
     const token = generateToken(user);
 
     const { password: pwd, ...others } = user.toObject();
-    res.status(200).send({ data: { user: others, token }, message: 'Successfully logged!', success: true });
+    res.send({ data: { user: others, token }, message: 'Successfully Logged!', success: true });
   } catch (error) {
+    console.log(error.message)
     res.status(500).send({ error: error.message, message: 'Server side error', success: false });
   }
 }
