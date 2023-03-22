@@ -1,6 +1,6 @@
 import CardLayout from '@components/CardLayout'
 import { LoadingButton } from '@mui/lab'
-import { TextField } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
@@ -16,6 +16,7 @@ const Dashboard = () => {
     const [blockLoading, setBlockLoading] = useState<boolean>(false);
     const [filteredUsers, setFilteredUsers] = useState<any>([]);
     const [searchText, setSearchText] = useState<string>('');
+    const [selectAgeF, setSelectAgeF] = useState<string>('');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -27,20 +28,40 @@ const Dashboard = () => {
     // hooks 
     const { users, usersLoading, usersFetch } = useUsers(token);
 
+    // filted users
     useEffect(() => {
-        if (searchText) {
-            setFilteredUsers(users?.data?.filter((el: any) => (el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i")) 
+        if (searchText && selectAgeF) {
+
+            if(selectAgeF === 'one'){
+                setFilteredUsers(users?.data?.filter((el: any) => ((el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))) && (el.age >= 18 && el.age <= 25)
+                ));
+            }else{
+                setFilteredUsers(users?.data?.filter((el: any) => ((el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))) && (el.age >= 26 && el.age <= 30)
+                ));
+            }
+        }else if(selectAgeF){
+            if(selectAgeF === 'one'){
+                setFilteredUsers(users?.data?.filter((el: any) => el.age >= 18 && el.age <= 25))
+            }else{
+                setFilteredUsers(users?.data?.filter((el: any) => el.age >= 26 && el.age <= 30))
+            }
+        }else if (searchText) {
+            setFilteredUsers(users?.data?.filter((el: any) => (el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))
             ));
         } else {
             setFilteredUsers(users?.data);
         }
-    }, [searchText, users?.data]);
+    }, [searchText, users?.data, selectAgeF]);
 
     // table
     const columns: TableColumn<any>[] = [
         {
             name: 'Full Name',
             selector: (row: any) => row.name,
+        },
+        {
+            name: 'Age',
+            selector: (row: any) => row.age,
         },
         {
             name: 'Email',
@@ -101,6 +122,22 @@ const Dashboard = () => {
             <div className='px-5 w-full'>
 
                 <div className='flex gap-3 flex-col md:flex-row justify-end mb-5'>
+
+                    <FormControl>
+                        <InputLabel id="ageF" className=' !text-indigo-500'>Filter By Age</InputLabel>
+                        <Select
+                            labelId="ageF"
+                            id="ageF"
+                            value={selectAgeF}
+                            label="Filter By Age"
+                            onChange={(e: any) => setSelectAgeF(e.target.value)}
+                            className=' !text-indigo-500 w-[200px]'
+                        >
+                            <MenuItem value=''>None</MenuItem>
+                            <MenuItem value='one'>18-25</MenuItem>
+                            <MenuItem value='two'>26-30</MenuItem>
+                        </Select>
+                    </FormControl>
 
                     <TextField
                         label="Search"
