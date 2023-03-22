@@ -11,11 +11,11 @@ const CardLayout = ({ children, hFull }: Props) => {
     return (
         <div className='container'>
             <div className={cx(
-                hFull ? 'h-full' : 'h-screen',
+                hFull ? 'h-full lg:h-screen' : 'h-screen',
                 "flex items-center justify-center w-full"
             )}>
                 <div className={cx(
-                        hFull ? 'h-full py-20 lg:py-0' : 'h-[90vh]',
+                    hFull ? 'h-full py-20 lg:py-0 lg:h-[90vh]' : 'h-[90vh]',
                     'bg-indigo-100 w-full rounded-md shadow flex flex-col items-center justify-center relative'
                 )}>
 

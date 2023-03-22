@@ -6,7 +6,6 @@ import { useRouter } from 'next/router'
 import React, { ChangeEvent, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { AiFillCaretRight } from 'react-icons/ai'
-import { asRider } from 'src/constants'
 
 const Login = () => {
 
@@ -21,37 +20,39 @@ const Login = () => {
         if (input.email === '' || input.password === '') {
             toast.error('Missing Information!');
             return;
-        } 
+        }
 
         setLoading(true);
         const config = { headers: {} };
 
         axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}login`, input, config)
-          .then(res => {
-            setLoading(false);
-            console.log(res.data)
-            if (res.data.success) {
-              localStorage.setItem('accessToken', res.data.data.token);
-              localStorage.setItem('userId', res.data.data.user.userId);
-    
-              if(res.data.data.user.role === 'rider'){
-                router.push('/profile')
-              }else{
-                router.push('/packages')
-              }
-    
-              toast.success(res.data.message);
-            } else {
-              toast.error(res.data.message);
-            }
-          })
+            .then(res => {
+                setLoading(false);
+                console.log(res.data)
+                if (res.data.success) {
+                    localStorage.setItem('accessToken', res.data.data.token);
+                    localStorage.setItem('userId', res.data.data.user.userId);
+
+                    if (res.data.data.user.role === 'rider') {
+                        router.push('/profile')
+                    } else if (res.data.data.user.role === 'learner') {
+                        router.push('/packages')
+                    } else {
+                        router.push('/dashboard')
+                    }
+
+                    toast.success(res.data.message);
+                } else {
+                    toast.error(res.data.message);
+                }
+            })
     }
 
     return (
         <CardLayout>
 
             <div className='lg:w-[80%] w-[90%]'>
-                
+
                 <div className="grid lg:grid-cols-2 gap-x-8 gap-y-8 md:gap-y-0">
                     <TextField
                         required
@@ -79,9 +80,9 @@ const Login = () => {
                         size="large"
                         endIcon={<AiFillCaretRight />}
                         className='!bg-indigo-500 !w-full'
-                    onClick={handleLogin}
-                    loading={loading}
-                    disabled={loading}
+                        onClick={handleLogin}
+                        loading={loading}
+                        disabled={loading}
                     >
                         <span>Login</span>
                     </LoadingButton>

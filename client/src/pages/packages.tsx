@@ -1,10 +1,14 @@
+import RequiredAuth from '@components/RequiredAuth'
+import Packages from '@views/Packages/Packages'
 import React from 'react'
 
 type Props = {}
 
 const packages = (props: Props) => {
   return (
-    <div>packages</div>
+    <RequiredAuth>
+      <Packages />
+    </RequiredAuth>
   )
 }
 

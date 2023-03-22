@@ -62,7 +62,7 @@ const userSchema = mongoose.Schema({
         type: String,
         default: 'active',
         enum: {
-            values: ['active', 'banned'],
+            values: ['active', 'block'],
             message: "role value can not be {VALUE}, must be active/banned"
         }
 

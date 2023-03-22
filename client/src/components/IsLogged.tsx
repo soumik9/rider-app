@@ -21,6 +21,10 @@ const IsLogged = ({ children }: Props) => {
             if (loggedUser.role === 'learner') {
                 router.push('/packages')
             }
+            
+            if (loggedUser.role === 'admin') {
+                router.push('/dashboard')
+            }
         }
     }, [logged, loggedUser.role])
 

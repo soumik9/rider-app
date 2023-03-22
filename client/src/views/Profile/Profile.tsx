@@ -18,8 +18,6 @@ const Profile = () => {
         router.push('/')
     }
 
-    console.log(loggedUserLoading)
-
     return (
         <CardLayout>
 
