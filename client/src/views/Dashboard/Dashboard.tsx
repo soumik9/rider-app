@@ -1,5 +1,6 @@
 import CardLayout from '@components/CardLayout'
 import { LoadingButton } from '@mui/lab'
+import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
 import { toast } from 'react-hot-toast'
@@ -9,7 +10,7 @@ import useUsers from 'src/hooks/useUsers'
 
 const Dashboard = () => {
 
-    const selectedUser = [];
+    const selectedUser: any = [];
     const [token, setToken] = useState<any>('');
     const [blockLoading, setBlockLoading] = useState<boolean>(false);
 
@@ -21,7 +22,7 @@ const Dashboard = () => {
 
 
     // hooks 
-    const { users, usersLoading } = useUsers(token);
+    const { users, usersLoading, usersFetch } = useUsers(token);
 
     // table
     const columns: TableColumn<any>[] = [
@@ -55,11 +56,28 @@ const Dashboard = () => {
 
     const handleBlockAll = () => {
 
-        if(!selectedUser.length){
+        if (!selectedUser.length) {
             toast.error('No user selected!')
         }
 
         setBlockLoading(true);
+
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}block-users`, { selectedUser }, config)
+            .then(res => {
+                setBlockLoading(false);
+                usersFetch();
+                if (res.data.success) {
+                    toast.success(res.data.message);
+                } else {
+                    toast.error('Server error!');
+                }
+            })
     }
 
     return (
@@ -73,9 +91,9 @@ const Dashboard = () => {
                         size="medium"
                         endIcon={<AiFillCaretRight />}
                         className='!bg-indigo-500'
-                        // onClick={handleLogin}
-                        // loading={loading}
-                        // disabled={loading}
+                        onClick={handleBlockAll}
+                        loading={blockLoading}
+                        disabled={blockLoading}
                     >
                         Block
                     </LoadingButton>

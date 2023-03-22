@@ -12,7 +12,7 @@ const getUsers = async (req, res) => {
 const blockUsers = async (req, res) => {
     try {
 
-        await User.updateMany({ _id: { $in: req.body } },
+        await User.updateMany({ _id: { $in: req.body.selectedUser } },
             {
                 $set: {
                     status: "block"
@@ -22,6 +22,7 @@ const blockUsers = async (req, res) => {
 
         res.send({ message: 'Successfully Updated Users!', success: true });
     } catch (error) {
+        console.log(error.message)
         res.status(500).send({ error: error.message, message: 'Server side error', success: false });
     }
 }
