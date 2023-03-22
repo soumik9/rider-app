@@ -22,7 +22,6 @@ const blockUsers = async (req, res) => {
 
         res.send({ message: 'Successfully Updated Users!', success: true });
     } catch (error) {
-        console.log(error.message)
         res.status(500).send({ error: error.message, message: 'Server side error', success: false });
     }
 }

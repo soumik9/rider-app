@@ -2,6 +2,7 @@ import CardLayout from '@components/CardLayout'
 import { LoadingButton } from '@mui/lab'
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
 import { toast } from 'react-hot-toast'
@@ -10,6 +11,8 @@ import { cx } from 'src/hooks/helper'
 import useUsers from 'src/hooks/useUsers'
 
 const Dashboard = () => {
+
+    const router = useRouter();
 
     const selectedUser: any = [];
     const [token, setToken] = useState<any>('');
@@ -23,8 +26,7 @@ const Dashboard = () => {
             setToken(localStorage.getItem('accessToken'));
         }
     }, [])
-
-
+    
     // hooks 
     const { users, usersLoading, usersFetch } = useUsers(token);
 
@@ -32,20 +34,20 @@ const Dashboard = () => {
     useEffect(() => {
         if (searchText && selectAgeF) {
 
-            if(selectAgeF === 'one'){
+            if (selectAgeF === 'one') {
                 setFilteredUsers(users?.data?.filter((el: any) => ((el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))) && (el.age >= 18 && el.age <= 25)
                 ));
-            }else{
+            } else {
                 setFilteredUsers(users?.data?.filter((el: any) => ((el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))) && (el.age >= 26 && el.age <= 30)
                 ));
             }
-        }else if(selectAgeF){
-            if(selectAgeF === 'one'){
+        } else if (selectAgeF) {
+            if (selectAgeF === 'one') {
                 setFilteredUsers(users?.data?.filter((el: any) => el.age >= 18 && el.age <= 25))
-            }else{
+            } else {
                 setFilteredUsers(users?.data?.filter((el: any) => el.age >= 26 && el.age <= 30))
             }
-        }else if (searchText) {
+        } else if (searchText) {
             setFilteredUsers(users?.data?.filter((el: any) => (el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i"))
             ));
         } else {
@@ -117,8 +119,24 @@ const Dashboard = () => {
             })
     }
 
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userId');
+        router.push('/')
+    }
+
     return (
         <CardLayout>
+
+            <div className='absolute top-5 left-3'>
+                <button
+                    className='text-indigo-500 hover:text-indigo-700 hover:underline trans'
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+            </div>
+
             <div className='px-5 w-full'>
 
                 <div className='flex gap-3 flex-col md:flex-row justify-end mb-5'>

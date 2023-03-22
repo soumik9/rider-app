@@ -28,7 +28,7 @@ const Login = () => {
         axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}login`, input, config)
             .then(res => {
                 setLoading(false);
-                console.log(res.data)
+
                 if (res.data.success) {
                     localStorage.setItem('accessToken', res.data.data.token);
                     localStorage.setItem('userId', res.data.data.user.userId);
