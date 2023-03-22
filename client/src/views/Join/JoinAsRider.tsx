@@ -137,7 +137,7 @@ const JoinAsRider = () => {
   }
 
   return (
-    <CardLayout>
+    <CardLayout hFull={true}>
 
       <form encType='multipart/form-data' onSubmit={handleSubmit} className='lg:w-[80%] w-[90%]'>
 
@@ -251,7 +251,7 @@ const JoinAsRider = () => {
 
           <div className={cx(
             step === asRider ? 'lg:grid-cols-3' : 'lg:grid-cols-2',
-            'grid grid-cols-1 gap-x-5 w-ful'
+            'grid grid-cols-1 gap-x-5 w-ful gap-y-5 md:gap-y-0'
           )}>
 
             {step === asRider ?  <Button

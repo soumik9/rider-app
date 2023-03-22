@@ -8,19 +8,20 @@ const useAuth = () => {
 
     let userId: string | null = '';
 
-    const [loggedUser, setLoggedUser] = useState({});
+    const [loggedUser, setLoggedUser] = useState<any>({});
     const [logged, setLogged] = useState(true);
-    const [loggedUserLoading, setLoggedUserLoading] = useState(true);
+    const [loggedUserLoading, setLoggedUserLoading] = useState(false);
 
     if (typeof window !== 'undefined') {
         userId = localStorage.getItem('userId');
     }
 
     useEffect(() => {
-        if (userId) {
-            setLoggedUserLoading(true);
 
-            fetch(`${process.env.REACT_APP_SERVER_URL}profile/${userId}`, {
+        setLoggedUserLoading(true);
+
+        if (userId) {
+            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}profile`, {
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json',
@@ -32,17 +33,15 @@ const useAuth = () => {
                         localStorage.removeItem('accessToken');
                         localStorage.removeItem('userId');
                         router.push('/')
-                        toast.error('Forbidden/Unauthorized access!', { duration: 2000 });
+                        toast.error('Forbidden/Unauthorized access!');
                     }
                     return res.json();
                 })
                 .then(data => {
                     setLoggedUserLoading(false);
-
-                    console.log(data)
-
+                    
                     if (data.success === true) {
-                        setLoggedUser(data.user);
+                        setLoggedUser(data.data);
                         setLogged(true)
                     }
 
@@ -56,8 +55,9 @@ const useAuth = () => {
                 })
         } else {
             setLoggedUser({});
-            setLogged(false)
-            router.push('/')
+            setLogged(false);
+            setLoggedUserLoading(false);
+            // router.push('/')
         }
     }, [router, userId])
 

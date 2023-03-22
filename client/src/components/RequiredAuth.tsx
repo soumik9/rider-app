@@ -13,6 +13,7 @@ const RequiredAuth = ({ children }: Props) => {
     let userId: string | null = '';
 
     const { logged, loggedUserLoading } = useAuth();
+
     if (typeof window !== 'undefined') {
         userId = localStorage.getItem('userId');
     }

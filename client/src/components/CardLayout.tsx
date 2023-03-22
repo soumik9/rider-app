@@ -1,15 +1,23 @@
 import Link from 'next/link'
 import React from 'react'
+import { cx } from 'src/hooks/helper';
 
 type Props = {
-    children: React.ReactNode
+    children: React.ReactNode;
+    hFull?: boolean;
 }
 
-const CardLayout = ({ children }: Props) => {
+const CardLayout = ({ children, hFull }: Props) => {
     return (
         <div className='container'>
-            <div className="flex items-center justify-center h-screen w-full">
-                <div className='bg-indigo-100 h-[90vh] w-full rounded-md shadow flex flex-col items-center justify-center relative'>
+            <div className={cx(
+                hFull ? 'h-full' : 'h-screen',
+                "flex items-center justify-center w-full"
+            )}>
+                <div className={cx(
+                        hFull ? 'h-full py-20 lg:py-0' : 'h-[90vh]',
+                    'bg-indigo-100 w-full rounded-md shadow flex flex-col items-center justify-center relative'
+                )}>
 
                     {children}
 
