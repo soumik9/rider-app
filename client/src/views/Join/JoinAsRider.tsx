@@ -6,8 +6,19 @@ import toast from 'react-hot-toast';
 import { inputType } from 'src/constants/types';
 import axios from 'axios';
 import { LoadingButton } from '@mui/lab';
+import { joinStep } from 'src/jotai/states';
+import { asLearner, asRider } from 'src/constants';
+import { useAtom } from 'jotai'
+import { cx } from 'src/hooks/helper';
+import { useRouter } from 'next/router';
 
 const JoinAsRider = () => {
+
+  // global
+  const router = useRouter();
+
+  // states
+  const [step, setStep] = useAtom(joinStep);
 
   const [vType, setVType] = useState<any>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,9 +71,18 @@ const JoinAsRider = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    if (input.name === '' || input.email === '' || input.age === '' || input.address === '' || input.phone === '' || input.carName === '' || input.carModel === '' || input.namePlate === '' || input.password === '' || input.confirmPassword === '' || input.vehicleType === '' || !input.img.name || !input.dlImg.name || !input.nid.name) {
-      toast.error('All fields are required!');
-      return;
+    if(step === asRider){
+      if (input.name === '' || input.email === '' || input.age === '' || input.address === '' || input.phone === '' || input.carName === '' || input.carModel === '' || input.namePlate === '' || input.password === '' || input.confirmPassword === '' || input.vehicleType === '' || !input.img.name || !input.dlImg.name || !input.nid.name) {
+        toast.error('All fields are required!');
+        return;
+      }
+    }
+    
+    if(step ===  asLearner){
+      if (input.name === '' || input.email === '' || input.age === '' || input.address === '' || input.phone === '' || input.password === '' || input.confirmPassword === '' || input.vehicleType === '' || !input.img.name || !input.nid.name) {
+        toast.error('All fields are required!');
+        return;
+      }
     }
 
     if (input.password.length < 6) {
@@ -92,16 +112,25 @@ const JoinAsRider = () => {
     formData.append('password', input.password);
     formData.append('confirmPassword', input.confirmPassword);
     formData.append('vehicleType', input.vehicleType);
-    formData.append('role', 'rider');
+    formData.append('role', step === asRider ? 'rider' : 'learner');
 
-    const config = {headers: {}};
+    const config = { headers: {} };
 
     axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}user/signup`, formData, config)
       .then(res => {
         setLoading(false);
-        if(res.data.success){
+        if (res.data.success) {
+          localStorage.setItem('accessToken', res.data.data.token);
+          localStorage.setItem('userId', res.data.data.userId);
+
+          if(step === asRider){
+            router.push('/profile')
+          }else{
+            router.push('/packages')
+          }
+
           toast.success(res.data.message);
-        }else{
+        } else {
           toast.error('Server error!');
         }
       })
@@ -157,29 +186,31 @@ const JoinAsRider = () => {
             onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, phone: e.target.value })}
           />
 
-          <TextField
-            required
-            label="Car Name"
-            variant="outlined"
-            className=' !text-indigo-500'
-            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carName: e.target.value })}
-          />
+          {step === asRider ? <>
+            <TextField
+              required
+              label="Car Name"
+              variant="outlined"
+              className=' !text-indigo-500'
+              onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carName: e.target.value })}
+            />
 
-          <TextField
-            required
-            label="Car Model"
-            variant="outlined"
-            className=' !text-indigo-500'
-            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carModel: e.target.value })}
-          />
+            <TextField
+              required
+              label="Car Model"
+              variant="outlined"
+              className=' !text-indigo-500'
+              onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, carModel: e.target.value })}
+            />
 
-          <TextField
-            required
-            label="Car Name Plate"
-            variant="outlined"
-            className=' !text-indigo-500'
-            onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, namePlate: e.target.value })}
-          />
+            <TextField
+              required
+              label="Car Name Plate"
+              variant="outlined"
+              className=' !text-indigo-500'
+              onChange={(e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setInput({ ...input, namePlate: e.target.value })}
+            />
+          </> : null}
 
           <TextField
             required
@@ -218,18 +249,23 @@ const JoinAsRider = () => {
 
         <div className='mt-10'>
 
-          <div className='grid lg:grid-cols-3 grid-cols-1 gap-x-5 w-ful'>
-            <Button
+          <div className={cx(
+            step === asRider ? 'lg:grid-cols-3' : 'lg:grid-cols-2',
+            'grid grid-cols-1 gap-x-5 w-ful'
+          )}>
+
+            {step === asRider ?  <Button
               variant="contained"
               component="label"
               className='!bg-indigo-500 w-full overflow-hidden'
               size="large"
-             
+
               onChange={handleDLFileChange}
             >
               {input.dlImg ? input.dlImg.name : 'Upload Driving Licence'}
               <input hidden accept="image/*" id="dlImg" name="dlImg" type="file" />
-            </Button>
+            </Button> : null}
+           
 
             <Button
               variant="contained"
@@ -267,7 +303,7 @@ const JoinAsRider = () => {
             loading={loading}
             disabled={loading}
           >
-            <span>Submit</span>
+            {step === asRider ? 'Join As Rider' : 'Join As Learner'}
           </LoadingButton>
 
         </div>

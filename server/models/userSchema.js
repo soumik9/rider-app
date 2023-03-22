@@ -29,10 +29,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Nid image is required']
     },  
-    drivingLicence: {
-        type: String,
-        required: [true, 'DL image is required']
-    }, 
+    drivingLicence: String, 
     carName: String,
     carModel: String,
     namePlate: String,

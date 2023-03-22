@@ -1,13 +1,12 @@
+import RequiredAuth from '@components/RequiredAuth'
 import Profile from '@views/Profile/Profile'
 import React from 'react'
 
-type Props = {}
-
-const ProfilePage = (props: Props) => {
+const ProfilePage = () => {
   return (
-    <>
+    <RequiredAuth>
         <Profile />
-    </>
+    </RequiredAuth>
   )
 }
 

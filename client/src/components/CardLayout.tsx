@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 type Props = {
@@ -13,7 +14,9 @@ const CardLayout = ({ children }: Props) => {
                     {children}
 
                     <div className='absolute top-3 right-3'>
-                        <h1 className='text-[24px] uppercase font-semibold text-indigo-500'>Rider App</h1>
+                        <Link href={'/'}>
+                            <h1 className='text-[24px] uppercase font-semibold text-indigo-500 hover:text-indigo-700 trans'>Rider App</h1>
+                        </Link>
                     </div>
 
                 </div>
