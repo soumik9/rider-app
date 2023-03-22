@@ -1,5 +1,6 @@
 import CardLayout from '@components/CardLayout'
 import { LoadingButton } from '@mui/lab'
+import { TextField } from '@mui/material'
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import DataTable, { TableColumn } from 'react-data-table-component'
@@ -13,6 +14,8 @@ const Dashboard = () => {
     const selectedUser: any = [];
     const [token, setToken] = useState<any>('');
     const [blockLoading, setBlockLoading] = useState<boolean>(false);
+    const [filteredUsers, setFilteredUsers] = useState<any>([]);
+    const [searchText, setSearchText] = useState<string>('');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -24,6 +27,15 @@ const Dashboard = () => {
     // hooks 
     const { users, usersLoading, usersFetch } = useUsers(token);
 
+    useEffect(() => {
+        if (searchText) {
+            setFilteredUsers(users?.data?.filter((el: any) => (el.name)?.match(new RegExp(searchText, "i")) || (el.email)?.match(new RegExp(searchText, "i")) || (el.phone)?.match(new RegExp(searchText, "i")) 
+            ));
+        } else {
+            setFilteredUsers(users?.data);
+        }
+    }, [searchText, users?.data]);
+
     // table
     const columns: TableColumn<any>[] = [
         {
@@ -33,6 +45,10 @@ const Dashboard = () => {
         {
             name: 'Email',
             selector: (row: any) => row.email,
+        },
+        {
+            name: 'Phone',
+            selector: (row: any) => row.phone,
         },
         {
             name: 'Role',
@@ -84,7 +100,15 @@ const Dashboard = () => {
         <CardLayout>
             <div className='px-5 w-full'>
 
-                <div className='flex justify-end mb-5'>
+                <div className='flex gap-3 flex-col md:flex-row justify-end mb-5'>
+
+                    <TextField
+                        label="Search"
+                        variant="outlined"
+                        className=' !text-indigo-500'
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setSearchText(e.target.value)}
+                    />
+
                     <LoadingButton
                         type='submit'
                         variant="contained"
@@ -101,7 +125,7 @@ const Dashboard = () => {
 
                 <DataTable
                     columns={columns}
-                    data={users?.data}
+                    data={filteredUsers}
                     progressPending={usersLoading}
                     persistTableHead={true}
                     selectableRows
