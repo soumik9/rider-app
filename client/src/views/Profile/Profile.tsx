@@ -25,7 +25,7 @@ const Profile = () => {
 
                 <div>
                     <div className='flex gap-x-5 items-center'>
-                        <Image src={loggedUser.image} loading='lazy' width={100} height={100} alt='img' className='rounded-full border border-indigo-500 p-1' />
+                        <Image src={loggedUser.image ? loggedUser.image : ''} loading='lazy' width={100} height={100} alt='img' className='rounded-full border border-indigo-500 p-1' />
 
                         <div>
                             <p className='text-indigo-700'>{loggedUser?.name}</p>
@@ -88,8 +88,8 @@ const Profile = () => {
                 </div>
 
                 <div className='flex flex-col items-end space-y-5 mt-10 lg:mt-0'>
-                    <Image src={loggedUser.nid} loading='lazy' width={300} height={300} alt='img' className='border border-indigo-500 p-1' />
-                    <Image src={loggedUser.drivingLicence} loading='lazy' width={300} height={300} alt='img' className='border border-indigo-500 p-1' />
+                    <Image src={loggedUser.nid ? loggedUser.nid : ''} loading='lazy' width={300} height={300} alt='img' className='border border-indigo-500 p-1' />
+                    <Image src={loggedUser.drivingLicence ? loggedUser.drivingLicence : ''} loading='lazy' width={300} height={300} alt='img' className='border border-indigo-500 p-1' />
                 </div>
 
 
