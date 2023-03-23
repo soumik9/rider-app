@@ -1,4 +1,4 @@
-const stripe = require('stripe')('sk_test_51L0j9AGllMoN5o7HEjHEH7qtmDvJnOWKh9I5FdTxPb98PIdcUk3X8adZssFheEfHfk4MN5Jb3JL2XwLRm6mtT97A00Gs7cdauT')
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 require('dotenv').config();
 
 const payment = async (req, res) => {

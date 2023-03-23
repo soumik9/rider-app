@@ -2,6 +2,8 @@
 
 Live Website [Click here](https://rider-app-delta.vercel.app/)
 
+Application API fetching could be slow for free use of backend hosting.
+
 ## Features
 
 * Can join as Rider or Learner.
