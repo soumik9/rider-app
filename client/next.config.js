@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'rider-app.onrender.com', 'rider-app-delta.vercel.app'],
+    domains: ['rider-app.onrender.com'],
   },
 };
 
