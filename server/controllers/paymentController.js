@@ -24,10 +24,9 @@ const payment = async (req, res) => {
             cancel_url: `${process.env.CLIENT_URL}/packages`,
         });
 
-        res.send({ url: session.url, message: 'Successfully Payment!', success: true });
+        res.send({ url: session.url, message: 'Successfully Procces TO Payment!', success: true });
 
     } catch (error) {
-        console.log(error.message)
         res.status(500).send({ error: error.message, message: 'Failed Pay', success: false });
     }
 }
