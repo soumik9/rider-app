@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'render.com'],
+    domains: ['localhost', 'render.com', 'rider-app.onrender.com'],
   },
 };
 
